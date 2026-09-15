@@ -1,0 +1,952 @@
+<title>Waves Bundle Matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --surface:#ffffff;
+    --surface-alt:#f1f1f2;
+    --surface-sunken:#f6f6f7;
+    --border:#e2e2e3;
+    --border-strong:#c7c7c9;
+    --text:#1d1d1d;
+    --text-muted:#6b6b6b;
+    --text-faint:#9a9a9a;
+    --accent:#f51449;
+    --accent-strong:#c30f3d;
+    --accent-soft:#fde8ee;
+    --accent-contrast:#ffffff;
+    --highlight:#1d1d1d;
+    --highlight-soft:#f1f1f2;
+    --shadow: 0 1px 2px rgba(20,20,20,.06), 0 8px 24px -12px rgba(20,20,20,.18);
+    --radius-lg:6px;
+    --radius-md:4px;
+    --radius-sm:3px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0e1116;
+      --surface:#161a20;
+      --surface-alt:#1e232a;
+      --surface-sunken:#12151a;
+      --border:#2b313a;
+      --border-strong:#40474f;
+      --text:#f1f1f1;
+      --text-muted:#a3a8ad;
+      --text-faint:#71767b;
+      --accent:#ff3366;
+      --accent-strong:#ff5c85;
+      --accent-soft:#33141d;
+      --accent-contrast:#ffffff;
+      --highlight:#3d434c;
+      --highlight-soft:#1e232a;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0e1116;
+    --surface:#161a20;
+    --surface-alt:#1e232a;
+    --surface-sunken:#12151a;
+    --border:#2b313a;
+    --border-strong:#40474f;
+    --text:#f1f1f1;
+    --text-muted:#a3a8ad;
+    --text-faint:#71767b;
+    --accent:#ff3366;
+    --accent-strong:#ff5c85;
+    --accent-soft:#33141d;
+    --accent-contrast:#ffffff;
+    --highlight:#3d434c;
+    --highlight-soft:#1e232a;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Roboto', 'Segoe UI', system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  #app{
+    direction:ltr;
+    max-width:1040px;
+    margin:0 auto;
+    padding-inline:20px;
+    padding-block:28px 64px;
+  }
+  h1,h2,h3{
+    font-family:'Montserrat','Roboto',sans-serif;
+    text-wrap:balance;
+    margin:0;
+  }
+  .mono{ font-family:'Roboto', ui-monospace, monospace; font-variant-numeric:tabular-nums; }
+  a{ color:inherit; }
+
+  /* ---------- header ---------- */
+  header.top{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:16px 24px;
+    margin-bottom:18px;
+  }
+  .heading-block h1{
+    font-size:clamp(1.5rem, 1.1rem + 1.4vw, 2.1rem);
+    font-weight:700;
+    letter-spacing:.2px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .heading-block h1 .glyph{
+    display:inline-flex;
+    width:1.15em; height:1.15em;
+    color:var(--accent-contrast);
+    background:var(--accent);
+    border-radius:8px;
+    align-items:center; justify-content:center;
+    font-size:.62em;
+  }
+  .heading-block p{
+    margin:6px 0 0;
+    color:var(--text-muted);
+    font-size:.95rem;
+    max-width:52ch;
+  }
+  .readout{
+    display:flex;
+    gap:2px;
+    background:var(--surface-sunken);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:3px;
+  }
+  .readout .cell{
+    padding:9px 14px;
+    text-align:center;
+    min-width:88px;
+  }
+  .readout .cell + .cell{ border-inline-start:1px solid var(--border); }
+  .readout .cell b{
+    display:block;
+    font-family:'Roboto',monospace;
+    font-variant-numeric:tabular-nums;
+    font-size:1.15rem;
+    color:var(--accent-strong);
+    line-height:1.1;
+  }
+  .readout .cell span{
+    display:block;
+    font-size:.66rem;
+    color:var(--text-faint);
+    letter-spacing:.04em;
+    margin-top:3px;
+  }
+
+  .disclaimer{
+    font-size:.76rem;
+    color:var(--text-faint);
+    border-inline-start:2px solid var(--border-strong);
+    padding-inline-start:10px;
+    margin-bottom:26px;
+    line-height:1.6;
+  }
+
+  /* ---------- tabs ---------- */
+  .tabs{
+    display:inline-flex;
+    background:var(--surface-alt);
+    border:1px solid var(--border);
+    border-radius:3px;
+    padding:4px;
+    gap:2px;
+    margin-bottom:16px;
+  }
+  .tabs button{
+    appearance:none;
+    border:0;
+    background:transparent;
+    color:var(--text-muted);
+    font-family:'Montserrat',sans-serif;
+    font-weight:600;
+    font-size:.88rem;
+    padding:9px 20px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:background .18s ease, color .18s ease;
+  }
+  .tabs button.active{
+    background:var(--accent);
+    color:var(--accent-contrast);
+  }
+  .tabs button:not(.active):hover{ color:var(--text); }
+
+  /* ---------- search ---------- */
+  .search-wrap{ position:relative; margin-bottom:18px; }
+  .search-wrap input{
+    width:100%;
+    font-family:'Roboto',sans-serif;
+    font-size:1rem;
+    padding:13px 44px 13px 16px;
+    border-radius:var(--radius-md);
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text);
+    outline:none;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .search-wrap input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  .search-wrap svg{
+    position:absolute;
+    inset-inline-end:14px;
+    top:50%;
+    transform:translateY(-50%);
+    width:18px; height:18px;
+    color:var(--text-faint);
+    pointer-events:none;
+  }
+
+  .suggest{
+    position:absolute;
+    z-index:5;
+    top:calc(100% + 6px);
+    inset-inline:0;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    box-shadow:var(--shadow);
+    max-height:340px;
+    overflow-y:auto;
+  }
+  .suggest button{
+    display:flex;
+    width:100%;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:10px 14px;
+    border:0;
+    background:transparent;
+    border-bottom:1px solid var(--border);
+    text-align:left;
+    font-family:'Roboto',sans-serif;
+    font-size:.92rem;
+    color:var(--text);
+    cursor:pointer;
+  }
+  .suggest button:last-child{ border-bottom:0; }
+  .suggest button:hover{ background:var(--surface-alt); }
+  .suggest button .cat{ font-size:.72rem; color:var(--text-faint); }
+  .suggest .empty{ padding:16px; color:var(--text-faint); font-size:.88rem; text-align:center; }
+
+  /* ---------- selected plugin chips ---------- */
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+  .chips .chip{
+    display:inline-flex; align-items:center; gap:7px;
+    background:var(--accent-soft); color:var(--accent-strong);
+    border:1px solid var(--accent); border-radius:3px;
+    padding:6px 7px 6px 13px; font-size:.82rem; font-weight:600;
+  }
+  .chips .chip button{
+    appearance:none; border:0; background:rgba(127,140,140,.28); color:inherit;
+    width:18px; height:18px; border-radius:50%; cursor:pointer;
+    font-size:.66rem; line-height:1; display:inline-flex; align-items:center; justify-content:center;
+  }
+  .chips .chip button:hover{ background:rgba(127,140,140,.5); }
+
+  .matchhead{ font-size:.85rem; color:var(--text-muted); margin-bottom:14px; }
+  .brow .bmatch{ font-size:.74rem; color:var(--text-muted); margin-top:3px; }
+  .brow .bmatch b{ color:var(--text); font-weight:600; }
+  .brow .badge.partial{ background:var(--highlight); }
+
+  /* ---------- category chips ---------- */
+  .catbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:7px;
+    margin-bottom:18px;
+  }
+  .catbar button{
+    appearance:none;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text-muted);
+    font-size:.78rem;
+    font-family:'Roboto',sans-serif;
+    font-weight:600;
+    padding:6px 13px;
+    border-radius:3px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .catbar button.active{
+    background:var(--accent-soft);
+    border-color:var(--accent);
+    color:var(--accent-strong);
+  }
+  .catbar button:not(.active):hover{ border-color:var(--border-strong); color:var(--text); }
+
+  .result-count{
+    font-size:.78rem;
+    color:var(--text-faint);
+    margin:-6px 0 14px;
+  }
+
+  /* ---------- bundle grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
+    gap:14px;
+  }
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:16px;
+    cursor:pointer;
+    transition:border-color .15s ease, transform .12s ease;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .card:hover{ border-color:var(--border-strong); }
+  .card.open{
+    border-color:var(--accent);
+    box-shadow:0 0 0 1px var(--accent);
+  }
+  .card .row1{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+  }
+  .cardhead-left{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .card h3{
+    font-size:1.02rem;
+    font-weight:700;
+    line-height:1.3;
+    min-width:0;
+  }
+  .picon{ display:inline-block; background-repeat:no-repeat; flex-shrink:0; }
+  .picon-bundle{ border-radius:4px; background-color:var(--surface-alt); }
+  .picon-plugin{ border-radius:3px; }
+  .chip-cat{
+    font-size:.66rem;
+    font-weight:700;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    background:var(--surface-alt);
+    padding:3px 8px;
+    border-radius:3px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .card .tagline{
+    font-size:.82rem;
+    color:var(--text-muted);
+    line-height:1.5;
+    flex:1;
+  }
+  .card .meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:2px;
+    padding-top:10px;
+    border-top:1px solid var(--border);
+    font-size:.8rem;
+  }
+  .card .plugcount{
+    font-family:'Roboto',monospace;
+    color:var(--text-muted);
+  }
+  .card .price b{
+    font-family:'Roboto',monospace;
+    font-size:.98rem;
+    color:var(--text);
+  }
+  .card .price s{
+    font-family:'Roboto',monospace;
+    color:var(--text-faint);
+    font-size:.76rem;
+    margin-inline-end:4px;
+  }
+
+  /* ---------- detail panel (bundle) ---------- */
+  .detail{
+    grid-column:1/-1;
+    background:var(--surface-sunken);
+    border:1px solid var(--accent);
+    border-radius:var(--radius-lg);
+    padding:18px 20px 20px;
+    animation:reveal .16s ease;
+  }
+  @keyframes reveal{ from{ opacity:0; transform:translateY(-4px);} to{ opacity:1; transform:none;} }
+  .detail .dhead{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:4px;
+  }
+  .dhead-left{ display:flex; align-items:center; gap:12px; min-width:0; }
+  .detail .dhead h3{ font-size:1.15rem; }
+  .detail .dhead a.ext{
+    font-size:.76rem;
+    color:var(--accent-strong);
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .detail .close{
+    appearance:none; border:0; background:var(--surface-alt);
+    color:var(--text-muted); width:26px; height:26px; border-radius:50%;
+    cursor:pointer; font-size:.9rem; line-height:1;
+  }
+  .detail .desc{ font-size:.85rem; color:var(--text-muted); margin:6px 0 14px; max-width:70ch; line-height:1.6; }
+  .detail .pfilter{
+    width:100%;
+    max-width:320px;
+    padding:8px 12px;
+    font-family:'Roboto',sans-serif;
+    font-size:.85rem;
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    background:var(--surface);
+    color:var(--text);
+    margin-bottom:12px;
+  }
+  .catgroup{ margin-bottom:14px; }
+  .catgroup h4{
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--text-faint);
+    font-weight:700;
+    margin:0 0 7px;
+  }
+  .pluglist{ display:flex; flex-wrap:wrap; gap:7px; }
+  .pluglist a{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:var(--surface);
+    border:1px solid var(--border);
+    padding:6px 11px;
+    border-radius:3px;
+    font-size:.8rem;
+    text-decoration:none;
+    color:var(--text);
+    transition:border-color .15s ease;
+  }
+  .pluglist a:hover{ border-color:var(--accent); color:var(--accent-strong); }
+
+  /* ---------- plugin mode detail ---------- */
+  .pdetail{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:20px 22px;
+    box-shadow:var(--shadow);
+  }
+  .pdetail .phead{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:14px;
+    padding-bottom:14px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:14px;
+  }
+  .pdetail .phead h2{ font-size:1.3rem; margin-bottom:4px; }
+  .pdetail .phead .msrp{
+    font-family:'Roboto',monospace;
+    color:var(--text-muted);
+    font-size:.85rem;
+  }
+  .pdetail .subhead{
+    font-size:.82rem;
+    color:var(--text-muted);
+    margin-bottom:12px;
+  }
+  .btable{ display:flex; flex-direction:column; gap:8px; }
+  .brow{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    padding:11px 14px;
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    background:var(--surface);
+    transition:border-color .15s ease;
+    cursor:pointer;
+  }
+  .brow:hover{ border-color:var(--border-strong); }
+  .brow.best{
+    border-color:var(--accent);
+    background:var(--accent-soft);
+  }
+  .brow .bname{ font-weight:600; font-size:.92rem; display:flex; align-items:center; gap:8px; }
+  .brow .badge{
+    font-size:.64rem;
+    font-weight:700;
+    background:var(--accent);
+    color:#fff;
+    padding:2px 8px;
+    border-radius:3px;
+    letter-spacing:.03em;
+  }
+  .brow .bprice{
+    font-family:'Roboto',monospace;
+    font-size:.92rem;
+    white-space:nowrap;
+  }
+  .brow .bprice s{ color:var(--text-faint); margin-inline-end:5px; font-size:.78rem; }
+
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--text-faint);
+    font-size:.9rem;
+  }
+  .empty-state .big{ font-size:2rem; margin-bottom:8px; }
+
+  footer.credits{
+    margin-top:40px;
+    padding-top:16px;
+    border-top:1px solid var(--border);
+    font-size:.74rem;
+    color:var(--text-faint);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  @media (max-width:560px){
+    header.top{ flex-direction:column; align-items:flex-start; }
+    .readout{ width:100%; }
+    .readout .cell{ flex:1; min-width:0; padding:8px 6px; }
+    .grid{ grid-template-columns:1fr; }
+  }
+</style>
+
+<div id="app">
+  <header class="top">
+    <div class="heading-block">
+      <h1><span class="glyph">W</span>Waves Bundle Matrix</h1>
+      <p>Cross-check all 55 Waves plugin bundles against the 244 plugins inside them — see what's in a bundle, or every bundle that includes a given plugin.</p>
+    </div>
+    <div class="readout mono" id="statReadout"></div>
+  </header>
+
+  <p class="disclaimer">Data manually collected from the official waves.com/bundles listing on 2026-09-15 (live prices and sales change on the actual site). This is an independent tool, not affiliated with Waves Audio.</p>
+
+  <div class="tabs" role="tablist">
+    <button id="tabBundle" class="active">By Bundle</button>
+    <button id="tabPlugin">By Plugin</button>
+  </div>
+
+  <div id="bundleMode">
+    <div class="search-wrap">
+      <input id="bundleSearch" type="text" placeholder="Search bundles — by name, category, or description..." autocomplete="off">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </div>
+    <div class="catbar" id="catBar"></div>
+    <div class="result-count" id="bundleCount"></div>
+    <div class="grid" id="bundleGrid"></div>
+  </div>
+
+  <div id="pluginMode" style="display:none;">
+    <div class="search-wrap">
+      <input id="pluginSearch" type="text" placeholder="Search a plugin — e.g. cla 76, ssl, vocal rider..." autocomplete="off">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <div class="suggest" id="pluginSuggest" style="display:none;"></div>
+    </div>
+    <div class="chips" id="pluginChips"></div>
+    <div id="pluginResult">
+      <div class="empty-state">
+        <div class="big">🎚️</div>
+        Add one or more plugins to see which bundles include them — alone or together.
+      </div>
+    </div>
+  </div>
+
+  <footer class="credits">
+    <span>An independent tool for exploring Waves bundle contents.</span>
+    <span id="lastUpdate"></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var DATA = null;
+  var SPRITE = null;
+  var state = { mode:'bundle', bundleQuery:'', category:'all', openBundle:null, selectedPlugins:[] };
+
+  var els = {
+    tabBundle: document.getElementById('tabBundle'),
+    tabPlugin: document.getElementById('tabPlugin'),
+    bundleMode: document.getElementById('bundleMode'),
+    pluginMode: document.getElementById('pluginMode'),
+    bundleSearch: document.getElementById('bundleSearch'),
+    catBar: document.getElementById('catBar'),
+    bundleCount: document.getElementById('bundleCount'),
+    bundleGrid: document.getElementById('bundleGrid'),
+    pluginSearch: document.getElementById('pluginSearch'),
+    pluginSuggest: document.getElementById('pluginSuggest'),
+    pluginChips: document.getElementById('pluginChips'),
+    pluginResult: document.getElementById('pluginResult'),
+    statReadout: document.getElementById('statReadout'),
+    lastUpdate: document.getElementById('lastUpdate')
+  };
+
+  function esc(s){
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function money(n){
+    if (n == null) return '';
+    return '$' + (Math.round(n*100)/100).toString();
+  }
+  function wavesUrl(path){ return 'https://www.waves.com' + path; }
+  function normalize(s){ return String(s == null ? '' : s).toLowerCase().replace(/[^a-z0-9]+/g, ''); }
+
+  function spriteStyle(kind, url, size){
+    if (!SPRITE) return '';
+    var pos = SPRITE.positions[kind + ':' + url];
+    if (!pos) return '';
+    var scale = size / SPRITE.cell;
+    var bgW = Math.round(SPRITE.width * scale);
+    var bgH = Math.round(SPRITE.height * scale);
+    var bgX = -Math.round(pos.x * scale);
+    var bgY = -Math.round(pos.y * scale);
+    return 'width:' + size + 'px;height:' + size + 'px;background-image:url(sprite.png);background-size:' + bgW + 'px ' + bgH + 'px;background-position:' + bgX + 'px ' + bgY + 'px;';
+  }
+  function icon(kind, url, size, cls){
+    var style = spriteStyle(kind, url, size);
+    if (!style) return '<span class="picon ' + (cls||'') + '" style="width:' + size + 'px;height:' + size + 'px"></span>';
+    return '<span class="picon ' + (cls||'') + '" style="' + style + '"></span>';
+  }
+
+  function init(data, spriteMap){
+    DATA = data;
+    SPRITE = spriteMap;
+    var bundles = DATA.bundles;
+    var pluginCount = Object.keys(DATA.plugins).length;
+    els.statReadout.innerHTML =
+      '<div class="cell"><b>' + bundles.length + '</b><span>Bundles</span></div>' +
+      '<div class="cell"><b>' + pluginCount + '</b><span>Plugins</span></div>';
+    els.lastUpdate.textContent = 'Last updated: 2026-09-15';
+
+    var cats = {};
+    bundles.forEach(function(b){ if (b.category) cats[b.category] = (cats[b.category]||0)+1; });
+    var catNames = Object.keys(cats).sort();
+    var catHtml = '<button class="active" data-cat="all">All (' + bundles.length + ')</button>';
+    catNames.forEach(function(c){
+      catHtml += '<button data-cat="' + esc(c) + '">' + esc(c) + ' (' + cats[c] + ')</button>';
+    });
+    els.catBar.innerHTML = catHtml;
+    els.catBar.addEventListener('click', function(e){
+      var btn = e.target.closest('button[data-cat]');
+      if (!btn) return;
+      state.category = btn.getAttribute('data-cat');
+      state.openBundle = null;
+      renderCatBar();
+      renderBundles();
+    });
+
+    renderBundles();
+  }
+
+  function renderCatBar(){
+    Array.prototype.forEach.call(els.catBar.querySelectorAll('button'), function(btn){
+      btn.classList.toggle('active', btn.getAttribute('data-cat') === state.category);
+    });
+  }
+
+  function matchesBundleQuery(b, q){
+    if (!q) return true;
+    var nq = normalize(q);
+    q = q.toLowerCase();
+    return (b.name && (b.name.toLowerCase().indexOf(q) > -1 || normalize(b.name).indexOf(nq) > -1)) ||
+           (b.category && b.category.toLowerCase().indexOf(q) > -1) ||
+           (b.tagline && b.tagline.toLowerCase().indexOf(q) > -1);
+  }
+
+  function renderBundles(){
+    var q = state.bundleQuery.trim();
+    var list = DATA.bundles.filter(function(b){
+      return (state.category === 'all' || b.category === state.category) && matchesBundleQuery(b, q);
+    });
+    els.bundleCount.textContent = list.length + ' of ' + DATA.bundles.length + ' bundles';
+
+    if (!list.length){
+      els.bundleGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="big">🔍</div>No matching bundles found.</div>';
+      return;
+    }
+
+    var html = '';
+    list.forEach(function(b){
+      var isOpen = state.openBundle === b.url;
+      html += '<div class="card' + (isOpen ? ' open' : '') + '" data-url="' + esc(b.url) + '">' +
+        '<div class="row1"><div class="cardhead-left">' + icon('bundle', b.url, 44, 'picon-bundle') + '<h3>' + esc(b.name) + '</h3></div>' + (b.category ? '<span class="chip-cat">' + esc(b.category) + '</span>' : '') + '</div>' +
+        '<div class="tagline">' + esc(b.tagline || '') + '</div>' +
+        '<div class="meta">' +
+          '<span class="plugcount">' + b.pluginCount + ' plugins</span>' +
+          '<span class="price">' + (b.msrp && b.msrp > b.price ? '<s>' + money(b.msrp) + '</s>' : '') + '<b>' + money(b.price) + '</b></span>' +
+        '</div>' +
+      '</div>';
+      if (isOpen) html += renderBundleDetail(b);
+    });
+    els.bundleGrid.innerHTML = html;
+
+    Array.prototype.forEach.call(els.bundleGrid.querySelectorAll('.card'), function(card){
+      card.addEventListener('click', function(){
+        var url = card.getAttribute('data-url');
+        state.openBundle = (state.openBundle === url) ? null : url;
+        renderBundles();
+      });
+    });
+    var closeBtn = els.bundleGrid.querySelector('.detail .close');
+    if (closeBtn) closeBtn.addEventListener('click', function(e){
+      e.stopPropagation();
+      state.openBundle = null;
+      renderBundles();
+    });
+    var pf = els.bundleGrid.querySelector('.pfilter');
+    if (pf) pf.addEventListener('click', function(e){ e.stopPropagation(); });
+    if (pf) pf.addEventListener('input', function(e){
+      renderPluginGroups(els.bundleGrid.querySelector('.catgroups'), currentDetailBundle, e.target.value);
+    });
+  }
+
+  var currentDetailBundle = null;
+
+  function renderBundleDetail(b){
+    currentDetailBundle = b;
+    var html = '<div class="detail" onclick="event.stopPropagation()">' +
+      '<div class="dhead">' +
+        '<div class="dhead-left">' + icon('bundle', b.url, 52, 'picon-bundle') +
+        '<div><h3>' + esc(b.name) + '</h3>' +
+        '<a class="ext" href="' + wavesUrl(b.url) + '" target="_blank" rel="noopener">View product page ⇗</a></div></div>' +
+        '<button class="close" title="Close">✕</button>' +
+      '</div>' +
+      '<div class="desc">' + esc(b.tagline || '') + '</div>' +
+      '<input class="pfilter" placeholder="Filter plugins inside ' + esc(b.name) + '...">' +
+      '<div class="catgroups"></div>' +
+    '</div>';
+    setTimeout(function(){
+      var container = els.bundleGrid.querySelector('.catgroups');
+      if (container) renderPluginGroups(container, b, '');
+    }, 0);
+    return html;
+  }
+
+  function renderPluginGroups(container, bundle, filter){
+    if (!container) return;
+    filter = (filter || '').trim().toLowerCase();
+    var groups = {};
+    bundle.plugins.forEach(function(url){
+      var p = DATA.plugins[url];
+      if (!p) return;
+      if (filter && p.name.toLowerCase().indexOf(filter) === -1) return;
+      var cat = p.category || 'Other';
+      (groups[cat] = groups[cat] || []).push({ url: url, name: p.name });
+    });
+    var catKeys = Object.keys(groups).sort();
+    if (!catKeys.length){
+      container.innerHTML = '<div class="empty-state" style="padding:20px 0"><span>No plugins match this filter.</span></div>';
+      return;
+    }
+    var html = '';
+    catKeys.forEach(function(cat){
+      var plugins = groups[cat].sort(function(a,b2){ return a.name.localeCompare(b2.name); });
+      html += '<div class="catgroup"><h4>' + esc(cat) + ' &middot; ' + plugins.length + '</h4><div class="pluglist">';
+      plugins.forEach(function(p){
+        html += '<a href="' + wavesUrl(p.url) + '" target="_blank" rel="noopener">' + icon('plugin', p.url, 22, 'picon-plugin') + esc(p.name) + '</a>';
+      });
+      html += '</div></div>';
+    });
+    container.innerHTML = html;
+  }
+
+  els.bundleSearch.addEventListener('input', function(e){
+    state.bundleQuery = e.target.value;
+    renderBundles();
+  });
+
+  /* ---------------- plugin mode (multi-select) ---------------- */
+
+  function pluginEntries(){
+    return Object.keys(DATA.plugins).map(function(url){
+      var p = DATA.plugins[url];
+      return { url: url, name: p.name, category: p.category, msrp: p.msrp, bundles: p.bundles };
+    });
+  }
+
+  els.pluginSearch.addEventListener('input', function(e){
+    var q = e.target.value.trim();
+    if (!q){ els.pluginSuggest.style.display = 'none'; return; }
+    var nq = normalize(q);
+    var matches = pluginEntries().filter(function(p){
+      return state.selectedPlugins.indexOf(p.url) === -1 && normalize(p.name).indexOf(nq) > -1;
+    }).sort(function(a,b){ return a.name.length - b.name.length; }).slice(0, 9);
+
+    if (!matches.length){
+      els.pluginSuggest.innerHTML = '<div class="empty">No matching plugin found.</div>';
+    } else {
+      els.pluginSuggest.innerHTML = matches.map(function(p){
+        return '<button data-url="' + esc(p.url) + '"><span style="display:flex;align-items:center;gap:8px;min-width:0;overflow:hidden">' + icon('plugin', p.url, 24, 'picon-plugin') + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + esc(p.name) + '</span></span><span class="cat">' + esc(p.category || '') + '</span></button>';
+      }).join('');
+    }
+    els.pluginSuggest.style.display = 'block';
+  });
+
+  els.pluginSearch.addEventListener('keydown', function(e){
+    if (e.key !== 'Enter') return;
+    var first = els.pluginSuggest.querySelector('button[data-url]');
+    if (first){
+      addSelectedPlugin(first.getAttribute('data-url'));
+      els.pluginSearch.value = '';
+      els.pluginSuggest.style.display = 'none';
+    }
+  });
+
+  els.pluginSuggest.addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-url]');
+    if (!btn) return;
+    addSelectedPlugin(btn.getAttribute('data-url'));
+    els.pluginSearch.value = '';
+    els.pluginSuggest.style.display = 'none';
+    els.pluginSearch.focus();
+  });
+
+  document.addEventListener('click', function(e){
+    if (!e.target.closest('#pluginMode .search-wrap')) els.pluginSuggest.style.display = 'none';
+  });
+
+  function addSelectedPlugin(url){
+    if (!DATA.plugins[url]) return;
+    if (state.selectedPlugins.indexOf(url) === -1) state.selectedPlugins.push(url);
+    renderPluginChips();
+    renderPluginResults();
+  }
+
+  function removeSelectedPlugin(url){
+    state.selectedPlugins = state.selectedPlugins.filter(function(u){ return u !== url; });
+    renderPluginChips();
+    renderPluginResults();
+  }
+
+  function renderPluginChips(){
+    els.pluginChips.innerHTML = state.selectedPlugins.map(function(url){
+      var p = DATA.plugins[url];
+      return '<span class="chip">' + icon('plugin', url, 18, 'picon-plugin') + esc(p.name) + '<button data-url="' + esc(url) + '" title="Remove">✕</button></span>';
+    }).join('');
+    Array.prototype.forEach.call(els.pluginChips.querySelectorAll('button[data-url]'), function(btn){
+      btn.addEventListener('click', function(){ removeSelectedPlugin(btn.getAttribute('data-url')); });
+    });
+  }
+
+  function renderPluginResults(){
+    var sel = state.selectedPlugins;
+    if (!sel.length){
+      els.pluginResult.innerHTML = '<div class="empty-state"><div class="big">🎚️</div>Add one or more plugins to see which bundles include them — alone or together.</div>';
+      return;
+    }
+
+    var rows = DATA.bundles.map(function(b){
+      var inBundle = {};
+      b.plugins.forEach(function(u){ inBundle[u] = true; });
+      var matched = sel.filter(function(u){ return inBundle[u]; });
+      var missing = sel.filter(function(u){ return !inBundle[u]; });
+      return { bundle: b, matched: matched, missing: missing };
+    }).filter(function(r){ return r.matched.length > 0; });
+
+    rows.sort(function(a,b){
+      if (b.matched.length !== a.matched.length) return b.matched.length - a.matched.length;
+      return a.bundle.price - b.bundle.price;
+    });
+
+    if (!rows.length){
+      els.pluginResult.innerHTML = '<div class="empty-state"><div class="big">🕳️</div>No bundle contains any of the selected plugins.</div>';
+      return;
+    }
+
+    var fullCount = rows.filter(function(r){ return r.matched.length === sel.length; }).length;
+    var cheapestPrice = rows[0].bundle.price;
+    var head = sel.length === 1
+      ? 'Included in ' + rows.length + ' of ' + DATA.bundles.length + ' bundles — sorted cheapest to priciest.'
+      : rows.length + ' bundle' + (rows.length === 1 ? '' : 's') + ' contain at least one of your ' + sel.length + ' picks — ' + fullCount + ' contain all of them.';
+
+    var html = '<div class="pdetail"><div class="matchhead">' + head + '</div><div class="btable">' +
+      rows.map(function(r){
+        var b = r.bundle;
+        var isFull = r.matched.length === sel.length;
+        var badge = sel.length === 1
+          ? (b.price === cheapestPrice ? '<span class="badge">Best value</span>' : '')
+          : (isFull ? '<span class="badge">All ' + sel.length + ' matched</span>' : '<span class="badge partial">' + r.matched.length + '/' + sel.length + ' matched</span>');
+        var missNames = r.missing.map(function(u){ return DATA.plugins[u].name; }).join(', ');
+        return '<div class="brow' + (isFull ? ' best' : '') + '" data-url="' + esc(b.url) + '">' +
+          '<div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">' +
+            icon('bundle', b.url, 34, 'picon-bundle') +
+            '<div style="flex:1;min-width:0">' +
+              '<div class="bname">' + esc(b.name) + badge + '</div>' +
+              (sel.length > 1 ? '<div class="bmatch">' + (missNames ? 'Missing: ' + esc(missNames) : '<b>All selected plugins included</b>') + '</div>' : '') +
+            '</div>' +
+          '</div>' +
+          '<div class="bprice">' + (b.msrp && b.msrp > b.price ? '<s>' + money(b.msrp) + '</s>' : '') + money(b.price) + '</div>' +
+        '</div>';
+      }).join('') +
+      '</div></div>';
+
+    els.pluginResult.innerHTML = html;
+    Array.prototype.forEach.call(els.pluginResult.querySelectorAll('.brow'), function(row){
+      row.addEventListener('click', function(){
+        var url = row.getAttribute('data-url');
+        switchTab('bundle');
+        state.openBundle = url;
+        state.bundleQuery = '';
+        state.category = 'all';
+        els.bundleSearch.value = '';
+        renderCatBar();
+        renderBundles();
+        var card = els.bundleGrid.querySelector('[data-url="' + url.replace(/"/g,'\\"') + '"]');
+        if (card) card.scrollIntoView({ behavior:'smooth', block:'center' });
+      });
+    });
+  }
+
+  function switchTab(mode){
+    state.mode = mode;
+    els.tabBundle.classList.toggle('active', mode === 'bundle');
+    els.tabPlugin.classList.toggle('active', mode === 'plugin');
+    els.bundleMode.style.display = mode === 'bundle' ? '' : 'none';
+    els.pluginMode.style.display = mode === 'plugin' ? '' : 'none';
+  }
+  els.tabBundle.addEventListener('click', function(){ switchTab('bundle'); });
+  els.tabPlugin.addEventListener('click', function(){ switchTab('plugin'); });
+
+  Promise.all([
+    fetch('data.json').then(function(r){ return r.json(); }),
+    fetch('sprite_map.json').then(function(r){ return r.json(); }).catch(function(){ return null; })
+  ]).then(function(results){
+    init(results[0], results[1]);
+  }).catch(function(err){
+    els.bundleGrid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Error loading data: ' + esc(err.message) + '</div>';
+  });
+})();
+</script>
